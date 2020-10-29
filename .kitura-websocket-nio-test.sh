@@ -14,7 +14,7 @@ fi
 set -e
 echo ">> Building Kitura"
 travis_start "swift_build_kitura_websocket"
-cd .. && git clone https://github.com/IBM-Swift/Kitura-WebSocket-NIO && cd Kitura-WebSocket-NIO
+cd .. && git clone https://github.com/Kitura-Next/Kitura-WebSocket-NIO && cd Kitura-WebSocket-NIO
 
 # Set KITURA_NIO
 export KITURA_NIO=1

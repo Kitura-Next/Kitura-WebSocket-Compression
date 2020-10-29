@@ -1,12 +1,12 @@
 <p align="center">
-    <a href="http://kitura.io/">
-        <img src="https://raw.githubusercontent.com/IBM-Swift/Kitura/master/Sources/Kitura/resources/kitura-bird.svg?sanitize=true" height="100" alt="Kitura">
+    <a href="http://kituranext.org/">
+        <img src="https://raw.githubusercontent.com/Kitura-Next/Kitura/master/Sources/Kitura/resources/kitura-bird.svg?sanitize=true" height="100" alt="Kitura">
     </a>
 </p>
 
 <p align="center">
-    <a href="https://travis-ci.org/IBM-Swift/Kitura-WebSocket-Compression">
-    <img src="https://travis-ci.org/IBM-Swift/Kitura-WebSocket-Compression.svg?branch=master" alt="Build Status - Master">
+    <a href="https://travis-ci.org/Kitura-Next/Kitura-WebSocket-Compression">
+    <img src="https://travis-ci.org/Kitura-Next/Kitura-WebSocket-Compression.svg?branch=master" alt="Build Status - Master">
     </a>
     <img src="https://img.shields.io/badge/os-macOS-green.svg?style=flat" alt="macOS">
     <img src="https://img.shields.io/badge/os-linux-green.svg?style=flat" alt="Linux">
@@ -22,7 +22,7 @@ A WebSocket compression library based on SwiftNIO
 ## WebSocket Compression
 WebSocket Compression, defined by [RFC7692](https://tools.ietf.org/html/rfc7692) allows WebSocket clients to send and receive compressed data on a WebSocket connection. Compression reduces the total wire-level payload of a WebSocket connection, possibly resulting in an improved throughput.
 
-This document discusses the implementation of WebSocket Compression in [Kitura-WebSocket-Compression](https://github.com/IBM-Swift/Kitura-WebSocket-Compression) API using [SwiftNIO](https://github.com/apple/swift-nio).
+This document discusses the implementation of WebSocket Compression in [Kitura-WebSocket-Compression](https://github.com/Kitura-Next/Kitura-WebSocket-Compression) API using [SwiftNIO](https://github.com/apple/swift-nio).
 
 This document assumes the reader is aware of the fundamentals of the [WebSocket protocol](https://tools.ietf.org/html/rfc6455).
 
@@ -37,10 +37,10 @@ This document assumes the reader is aware of the fundamentals of the [WebSocket 
 
 #### Add dependencies
 
-Add the `Kitura-WebSocket-Compression` package to the dependencies within your application’s `Package.swift` file. Substitute `"x.x.x"` with the latest `Kitura-WebSocket-Compression` [release](https://github.com/IBM-Swift/Kitura-WebSocket-Compression/releases).
+Add the `Kitura-WebSocket-Compression` package to the dependencies within your application’s `Package.swift` file. Substitute `"x.x.x"` with the latest `Kitura-WebSocket-Compression` [release](https://github.com/Kitura-Next/Kitura-WebSocket-Compression/releases).
 
 ```swift
-.package(url: "https://github.com/IBM-Swift/Kitura-WebSocket-Compression.git", from: "x.x.x")
+.package(url: "https://github.com/Kitura-Next/Kitura-WebSocket-Compression.git", from: "x.x.x")
 ```
 
 Add `Kitura-WebSocket-Compression` to your target's dependencies:
@@ -78,7 +78,7 @@ The specification also discusses the DEFLATE algorithm. We utilize the [zlib com
 ### 4. An implementation of permessage-deflate based on SwiftNIO
 The [SwiftNIO](https://github.com/apple/swift-nio) framework provides an API which enables HTTP/WebSocket server implementations to view the processing of data, that has been read from or written to sockets, as a sequence of transformations that happen through a pipeline of handlers. An active connection is represented by a `Channel`. Data which is read from, or written to, a channel moves through a `ChannelPipeline` of inbound and outbound `ChannelHandlers`. An `EventLoop` is associated with every `Channel`. An `EventLoop` is a thread-safe abstraction of a thread and provides features for asynchronous code execution using `EventLoopFutures` and `EventLoopPromises`.
 
-In [Kitura-NIO](https://github.com/IBM-Swift/Kitura-NIO), we start the HTTP server with the pipeline configured by SwiftNIO, adding Kitura-NIO's `HTTPRequestHandler` at the end. A view of the inbound and outbound pipelines (with some handlers omitted for simplicity) is this:
+In [Kitura-NIO](https://github.com/Kitura-Next/Kitura-NIO), we start the HTTP server with the pipeline configured by SwiftNIO, adding Kitura-NIO's `HTTPRequestHandler` at the end. A view of the inbound and outbound pipelines (with some handlers omitted for simplicity) is this:
 
 - Inbound channel handler pipeline:
 
@@ -107,7 +107,7 @@ In [Kitura-NIO](https://github.com/IBM-Swift/Kitura-NIO), we start the HTTP serv
   *(Operating System)*    
 
 
-[HTTPDecoder](https://apple.github.io/swift-nio/docs/current/NIOHTTP1/Classes/HTTPDecoder.html) and [HTTPResponseEncoder](https://apple.github.io/swift-nio/docs/current/NIOHTTP1/Classes/HTTPResponseEncoder.html) convert bytes to HTTP requests, and responses to bytes, respectively. [NIOSSLServerHandler](https://apple.github.io/swift-nio-ssl/docs/current/NIOSSL/Classes/NIOSSLServerHandler.html) is a duplex handler (both inbound and outbound) used to decrypt and encrypt data on a secure connection. The [HTTPRequestHandler](https://github.com/IBM-Swift/Kitura-NIO/blob/master/Sources/KituraNet/HTTP/HTTPRequestHandler.swift) is used to invoke Kitura's router.
+[HTTPDecoder](https://apple.github.io/swift-nio/docs/current/NIOHTTP1/Classes/HTTPDecoder.html) and [HTTPResponseEncoder](https://apple.github.io/swift-nio/docs/current/NIOHTTP1/Classes/HTTPResponseEncoder.html) convert bytes to HTTP requests, and responses to bytes, respectively. [NIOSSLServerHandler](https://apple.github.io/swift-nio-ssl/docs/current/NIOSSL/Classes/NIOSSLServerHandler.html) is a duplex handler (both inbound and outbound) used to decrypt and encrypt data on a secure connection. The [HTTPRequestHandler](https://github.com/Kitura-Next/Kitura-NIO/blob/master/Sources/KituraNet/HTTP/HTTPRequestHandler.swift) is used to invoke Kitura's router.
 
 An upgrade to WebSocket causes SwiftNIO to alter the above pipeline in these ways:
  - the `HTTPDecoder` and `HTTPResponseEncoder` (and other HTTP related handlers) are removed from the pipeline
@@ -145,7 +145,7 @@ Additionally, `Kitura-WebSocket-NIO` makes the following changes to the pipeline
       \|  
      *(Operating System)*    
    
- [WebSocketCompressor](https://github.com/IBM-Swift/Kitura-WebSocket-Compression/blob/master/Sources/WebSocketCompression/WebSocketCompressor.swift) is an outbound handler used to compress outbound WebSocket messages. [WebSocketDecompressor](https://github.com/IBM-Swift/Kitura-WebSocket-Compression/blob/master/Sources/WebSocketCompression/WebSocketDecompressor.swift) is an inbound handler used to decompress inbound WebSocket messages. Every WebSocket connection where a compression was negotiated, gets its own (`WebSocketCompressor`, `WebSocketDecompressor`) pair.
+ [WebSocketCompressor](https://github.com/Kitura-Next/Kitura-WebSocket-Compression/blob/master/Sources/WebSocketCompression/WebSocketCompressor.swift) is an outbound handler used to compress outbound WebSocket messages. [WebSocketDecompressor](https://github.com/Kitura-Next/Kitura-WebSocket-Compression/blob/master/Sources/WebSocketCompression/WebSocketDecompressor.swift) is an inbound handler used to decompress inbound WebSocket messages. Every WebSocket connection where a compression was negotiated, gets its own (`WebSocketCompressor`, `WebSocketDecompressor`) pair.
  These handlers currently use `permessage-deflate` for compression.
  
  With this setup, all the inbound data first passes through SwiftNIO's [WebSocketDecoder](https://apple.github.io/swift-nio/docs/current/NIOWebSocket/Classes/WebSocketFrameDecoder.html) where the WebSocket frames are built. It then moves into the `WebSocketDecompressor` where multiple frames comprising a message are accumulated and decompressed using `zlib`'s inflater. Subsequently, the decompressed messages are moved to the `WebSocketConnection` handler.
@@ -191,9 +191,9 @@ In the `Kitura-WebSocket-NIO` implementation:
 
 2. As mentioned in one of the examples [here](https://tools.ietf.org/html/rfc7692#section-7.1.3), a client may supply fallback negotiation offers, in case negotiation fails. `Kitura-WebSocket-NIO` hasn't implemented this. We make sure every offer goes through.
 
-3. The LZ77 sliding window value must be passed as a negative parameter to deflateInit2()/inflateInit2(). This informs `zlib` that we use raw deflate streams (as against zlib streams that result with sliding window positive values). See [this](https://github.com/IBM-Swift/Kitura-WebSocket-NIO/pull/26/commits/52614a23dbff37db18e2c0fb70e282921c0bb666).
+3. The LZ77 sliding window value must be passed as a negative parameter to deflateInit2()/inflateInit2(). This informs `zlib` that we use raw deflate streams (as against zlib streams that result with sliding window positive values). See [this](https://github.com/Kitura-Next/Kitura-WebSocket-NIO/pull/26/commits/52614a23dbff37db18e2c0fb70e282921c0bb666).
 
-4. There's an open zlib bug with a sliding window size of 8 bits. See [this](https://github.com/madler/zlib/issues/171). There is a workaround for zlib streams. We implement a similar workaround for raw deflate streams [here](https://github.com/IBM-Swift/Kitura-WebSocket-NIO/pull/26/commits/c9d9b44d56de7c398a526b34dacf7b4302045f73).
+4. There's an open zlib bug with a sliding window size of 8 bits. See [this](https://github.com/madler/zlib/issues/171). There is a workaround for zlib streams. We implement a similar workaround for raw deflate streams [here](https://github.com/Kitura-Next/Kitura-WebSocket-NIO/pull/26/commits/c9d9b44d56de7c398a526b34dacf7b4302045f73).
 
 5. Clients may negotiate for compression but send uncompressed frames. To handle this, just before decompressing, we check the RSV1 bit of the first frame to make sure it belongs to a compressed message.
 
